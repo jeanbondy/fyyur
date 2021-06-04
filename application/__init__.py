@@ -30,9 +30,13 @@ def init_app():
     moment.init_app(app)
 
     with app.app_context():
-        app.jinja_env.filters['datetime'] = format_datetime
-        from application.models import artist, venue
+        from application.models import artist, venue, show
         from application import routes
+        from application.artist_bp import routes
+        from application.venue_bp import routes
+        app.register_blueprint(artist_bp.routes.artist_bp)
+        app.register_blueprint(venue_bp.routes.venue_bp)
+        app.jinja_env.filters['datetime'] = format_datetime
 
         if not app.debug:
             file_handler = FileHandler('error.log')
