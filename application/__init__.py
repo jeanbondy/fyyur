@@ -51,7 +51,7 @@ def init_app():
         return app
 
 
-# TODO: connect to a local postgresql database
+
 
 
 # ----------------------------------------------------------------------------#
