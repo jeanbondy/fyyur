@@ -1,4 +1,4 @@
-from application import db
+from application import db, format_datetime
 
 
 class Show(db.Model):
@@ -7,3 +7,13 @@ class Show(db.Model):
     start_time = db.Column(db.DateTime(timezone=False), nullable=False)
     artist_id = db.Column(db.Integer, db.ForeignKey('artist.id'), nullable=False)
     venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
+
+    def data(self):
+        data = {
+            "venue_id": self.show_venue.id,
+            "venue_name": self.show_venue.name,
+            "venue_image_link": self.show_venue.image_link,
+            "start_time": format_datetime(str(self.start_time))
+        }
+        return data
+
