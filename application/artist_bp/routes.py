@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from application.models.artist import Artist
 from application.models.show import Show
 from forms import *
@@ -76,6 +76,32 @@ def create_artist_submission():
     # TODO: insert form data as a new Venue record in the db, instead
     # TODO: modify data to be the data object returned from db insertion
 
+    form = ArtistForm(request.form)
+
+    try:
+        # create new artist object and populate with form values
+        new_artist = Artist(
+            name=form.name.data.strip(),
+            city=form.city.data.strip(),
+            state=form.state.data,
+            phone=form.phone.data.strip(),
+            genres=form.genres.data,
+            seeking_venue=form.seeking_venue.data,
+            seeking_description=form.seeking_description.data.strip(),
+            image_link=form.image_link.data,
+            website=form.website_link.data,
+            facebook_link=form.facebook_link.data)
+        # write to database
+        db.session.add(new_artist)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        error = True
+        print(sys.exc_info())
+        flash('An error occurred. Artist ' + new_artist.name + ' could not be listed.')
+    finally:
+        db.session.close()
+
     # on successful db insert, flash success
     flash('Artist ' + request.form['name'] + ' was successfully listed!')
     # TODO: on unsuccessful db insert, flash an error instead.
@@ -112,7 +138,7 @@ def edit_artist_submission(artist_id):
         artist.seeking_venue = form.seeking_venue.data
         artist.seeking_description = form.seeking_description.data.strip()
         artist.image_link = form.image_link.data
-        artist.website_link = form.website_link.data
+        artist.website = form.website_link.data
         artist.facebook_link = form.facebook_link.data
         # write to database
         db.session.add(artist)
