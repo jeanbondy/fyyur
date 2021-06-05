@@ -45,7 +45,6 @@ def show_artist(artist_id):
     # TODO: replace with real artist data from the artist table, using artist_id
     artist_query = Artist.query.get(artist_id)
     artist_data = artist_query.data()
-    artist_upcoming_shows = Show.query.filter_by(artist_id=artist_id).filter(Show.start_time > datetime.now()).all()
     artist_shows = Show.query.filter_by(artist_id=artist_id).all()
     upcoming_shows = []
     past_shows = []

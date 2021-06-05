@@ -77,47 +77,26 @@ def search_venues():
 
 @venue_bp.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-    venue = Venue.query.get(venue_id)
-    upcoming_shows = db.session.query(Show).join(Artist).filter(Show.venue_id == venue_id).filter(Show.start_time>datetime.now()).all()
-    past_shows = db.session.query(Show).join(Artist, Show.artist_id == Artist.id).filter(Show.venue_id == venue_id).filter(Show.start_time<datetime.now()).all()
-    upcoming_shows_data = []
-    past_shows_data = []
-    for show in past_shows:
-        past_shows_data.append({
-            "artist_id": show.artist_id,
-            "artist_name": show.guest_artist.name,
-            "artist_image_link": show.guest_artist.image_link,
-            "start_time": show.start_time.strftime('%Y-%m-%d %H:%M:%S')
-        })
-    for show in upcoming_shows:
-        upcoming_shows_data.append({
-            "artist_id": show.artist_id,
-            "artist_name": show.guest_artist.name,
-            "artist_image_link": show.guest_artist.image_link,
-            "start_time": show.start_time.strftime('%Y-%m-%d %H:%M:%S')
-        })
+    venue_query = Venue.query.get(venue_id)
+    venue_data = venue_query.data()
+    venue_shows = db.session.query(Show).join(Venue).filter(Show.venue_id == venue_id).filter(Show.start_time>datetime.now()).all()
+    upcoming_shows = []
+    past_shows = []
+    for show in venue_shows:
+        show_data = show.data()
+        show_data["artist_name"] = show.guest_artist.name
+        show_data["artist_image_link"] = show.guest_artist.image_link
+
+        if show.start_time > datetime.now():
+            upcoming_shows.append(show_data)
+        else:
+            past_shows.append(show_data)
+    venue_data['past_shows'] = past_shows
+    venue_data['upcoming_shows'] = upcoming_shows
+    venue_data["past_shows_count"] = len(past_shows)
+    venue_data["upcoming_shows_count"] = len(upcoming_shows)
 
 
-
-
-    venue_data = {
-        "id": venue.id,
-        "name": venue.name,
-        "genres": venue.genres,
-        "address": venue.address,
-        "city": venue.city,
-        "state": venue.state,
-        "phone": venue.phone,
-        "website": venue.website,
-        "facebook_link": venue.facebook_link,
-        "seeking_talent": venue.seeking_talent,
-        "seeking_description": venue.seeking_description,
-        "image_link": venue.image_link,
-        "past_shows": past_shows_data,
-        "upcoming_shows": upcoming_shows_data,
-        "past_shows_count": len(past_shows_data),
-        "upcoming_shows_count": len(upcoming_shows_data),
-    }
     # shows the venue page with the given venue_id
     # TODO: replace with real venue data from the venues table, using venue_id
     data1 = {
