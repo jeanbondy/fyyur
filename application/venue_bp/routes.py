@@ -1,12 +1,13 @@
-from flask import Blueprint, render_template, request
-from flask import current_app as app
+from flask import Blueprint, render_template, request, flash
 from application.models.venue import Venue
 from application.models.artist import Artist
 from application.models.show import Show
 from datetime import datetime
 from sqlalchemy import func
-
+from forms import *
 from application import db
+import sys
+
 
 
 venue_bp = Blueprint('venue_bp', __name__)
@@ -39,27 +40,7 @@ def venues():
 
     # TODO: replace with real venues data.
     #       num_shows should be aggregated based on number of upcoming shows per venue.
-    data = [{
-        "city": "San Francisco",
-        "state": "CA",
-        "venues": [{
-            "id": 1,
-            "name": "The Musical Hop",
-            "num_upcoming_shows": 0,
-        }, {
-            "id": 3,
-            "name": "Park Square Live Music & Coffee",
-            "num_upcoming_shows": 1,
-        }]
-    }, {
-        "city": "New York",
-        "state": "NY",
-        "venues": [{
-            "id": 2,
-            "name": "The Dueling Pianos Bar",
-            "num_upcoming_shows": 0,
-        }]
-    }]
+
     return render_template('pages/venues.html', areas=all_venues_data)
 
 
@@ -68,7 +49,21 @@ def search_venues():
     # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
     # seach for Hop should return "The Musical Hop".
     # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+    search_term = request.form.get('search_term', '').strip().lower()
+    venues_query = Venue.query.filter(Venue.name.ilike('%' + search_term + '%')).all()
+    venues_found = []
+
+    for venue in venues_query:
+        venue_data = venue.data()
+        venue_upcoming_shows = Show.query.filter_by(venue_id=venue.id).filter(Show.start_time > datetime.now()).all()
+        venue_data["num_upcoming_shows"] = len(venue_upcoming_shows)
+        venues_found.append(venue_data)
+
     response = {
+        "count": len(venues_found),
+        "data": venues_found}
+
+    sample_response = {
         "count": 1,
         "data": [{
             "id": 2,
