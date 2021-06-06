@@ -76,20 +76,12 @@ def create_artist_submission():
     # TODO: modify data to be the data object returned from db insertion
 
     form = ArtistForm(request.form)
-
+    error = False
     try:
         # create new artist object and populate with form values
-        new_artist = Artist(
-            name=form.name.data.strip(),
-            city=form.city.data.strip(),
-            state=form.state.data,
-            phone=form.phone.data.strip(),
-            genres=form.genres.data,
-            seeking_venue=form.seeking_venue.data,
-            seeking_description=form.seeking_description.data.strip(),
-            image_link=form.image_link.data,
-            website=form.website_link.data,
-            facebook_link=form.facebook_link.data)
+        new_artist = Artist()
+        # populate with form values
+        form.populate_obj(new_artist)
         # write to database
         db.session.add(new_artist)
         db.session.commit()
@@ -125,8 +117,10 @@ def edit_artist_submission(artist_id):
     # TODO: take values from the form submitted, and update existing
     # artist record with ID <artist_id> using the new attributes
     form = ArtistForm()
-    # get the artist object from database
+    # create the artist object from database
     artist = Artist.query.get(artist_id)
+    # create error variable and set to false
+    error = False
 
     try:
         # populate the artist object with form values
@@ -149,5 +143,10 @@ def edit_artist_submission(artist_id):
         print(sys.exc_info())
     finally:
         db.session.close()
+    if error:
+        flash('An error occurred. Artist ' + request.form['name'] + ' could not be updated.')
+    else:
+        # on successful db insert, flash success
+        flash('Artist ' + request.form['name'] + ' was successfully updated!')
 
     return redirect(url_for('artist_bp.show_artist', artist_id=artist_id))
