@@ -19,13 +19,10 @@ class Artist(db.Model):
     shows = db.relationship('Show', backref='guest_artist', lazy=True)
 
     def data(self):
-        genres_list = []
-        for genre in self.genres:
-            genres_list.append(genre)
         data = {
             "id": self.id,
             "name": self.name,
-            "genres": genres_list,
+            "genres": self.genres,
             "city": self.city,
             "state": self.state,
             "phone": self.phone,

@@ -19,9 +19,6 @@ class Venue(db.Model):
     shows = db.relationship('Show', backref='show_venue', lazy=True)
 
     def data(self):
-        genres_list = []
-        for genre in self.genres:
-            genres_list.append(genre)
         data = {
             "id": self.id,
             "name": self.name,
