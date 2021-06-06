@@ -32,10 +32,12 @@ def init_app():
     with app.app_context():
         from application.models import artist, venue, show
         from application import routes
-        from application.artist_bp import routes
-        from application.venue_bp import routes
-        app.register_blueprint(artist_bp.routes.artist_bp)
-        app.register_blueprint(venue_bp.routes.venue_bp)
+        from application.artist_bp.routes import artist_bp
+        from application.venue_bp.routes import venue_bp
+        from application.show_bp.routes import show_bp
+        app.register_blueprint(artist_bp)
+        app.register_blueprint(venue_bp)
+        app.register_blueprint(show_bp)
         app.jinja_env.filters['datetime'] = format_datetime
 
         if not app.debug:

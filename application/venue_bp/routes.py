@@ -165,7 +165,7 @@ def delete_venue(venue_id):
 
     # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
     # clicking that button delete it from the db then redirect the user to the homepage
-    return redirect(url_for('venue_bp.venues'))
+    return redirect(url_for('index'))
 
 
 @venue_bp.route('/venues/<int:venue_id>/edit', methods=['GET'])
