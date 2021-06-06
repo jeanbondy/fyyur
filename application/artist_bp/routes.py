@@ -45,7 +45,6 @@ def show_artist(artist_id):
     # TODO: replace with real artist data from the artist table, using artist_id
     artist_query = Artist.query.get(artist_id)
     artist_data = artist_query.data()
-    artist_upcoming_shows = Show.query.filter_by(artist_id=artist_id).filter(Show.start_time > datetime.now()).all()
     artist_shows = Show.query.filter_by(artist_id=artist_id).all()
     upcoming_shows = []
     past_shows = []
@@ -77,20 +76,12 @@ def create_artist_submission():
     # TODO: modify data to be the data object returned from db insertion
 
     form = ArtistForm(request.form)
-
+    error = False
     try:
         # create new artist object and populate with form values
-        new_artist = Artist(
-            name=form.name.data.strip(),
-            city=form.city.data.strip(),
-            state=form.state.data,
-            phone=form.phone.data.strip(),
-            genres=form.genres.data,
-            seeking_venue=form.seeking_venue.data,
-            seeking_description=form.seeking_description.data.strip(),
-            image_link=form.image_link.data,
-            website=form.website_link.data,
-            facebook_link=form.facebook_link.data)
+        new_artist = Artist()
+        # populate with form values
+        form.populate_obj(new_artist)
         # write to database
         db.session.add(new_artist)
         db.session.commit()
@@ -98,14 +89,15 @@ def create_artist_submission():
         db.session.rollback()
         error = True
         print(sys.exc_info())
-        flash('An error occurred. Artist ' + new_artist.name + ' could not be listed.')
     finally:
         db.session.close()
-
-    # on successful db insert, flash success
-    flash('Artist ' + request.form['name'] + ' was successfully listed!')
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+    if error:
+        # TODO: on unsuccessful db insert, flash an error instead.
+        # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+        flash('An error occurred. Artist ' + request.form['name'] + ' could not be listed.')
+    else:
+        # on successful db insert, flash success
+        flash('Artist ' + request.form['name'] + ' was successfully listed!')
     return render_template('pages/home.html')
 
 
@@ -125,8 +117,10 @@ def edit_artist_submission(artist_id):
     # TODO: take values from the form submitted, and update existing
     # artist record with ID <artist_id> using the new attributes
     form = ArtistForm()
-    # get the artist object from database
+    # create the artist object from database
     artist = Artist.query.get(artist_id)
+    # create error variable and set to false
+    error = False
 
     try:
         # populate the artist object with form values
@@ -149,5 +143,10 @@ def edit_artist_submission(artist_id):
         print(sys.exc_info())
     finally:
         db.session.close()
+    if error:
+        flash('An error occurred. Artist ' + request.form['name'] + ' could not be updated.')
+    else:
+        # on successful db insert, flash success
+        flash('Artist ' + request.form['name'] + ' was successfully updated!')
 
     return redirect(url_for('artist_bp.show_artist', artist_id=artist_id))
