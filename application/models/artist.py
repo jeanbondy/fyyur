@@ -16,16 +16,13 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean(), default=False)
     seeking_description = db.Column(db.String(500))
     website = db.Column(db.String(120))
-    shows = db.relationship('Show', backref='guest_artist', lazy=True)
+    shows = db.relationship('Show', backref='guest_artist', lazy=True, cascade="all, delete-orphan")
 
     def data(self):
-        genres_list = []
-        for genre in self.genres:
-            genres_list.append(genre)
         data = {
             "id": self.id,
             "name": self.name,
-            "genres": genres_list,
+            "genres": self.genres,
             "city": self.city,
             "state": self.state,
             "phone": self.phone,
@@ -36,5 +33,8 @@ class Artist(db.Model):
             "image_link": self.image_link
         }
         return data
+
+    def __repr__(self):
+        return '<Artist %r>' % self
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate

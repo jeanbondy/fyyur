@@ -105,10 +105,10 @@ def create_artist_submission():
 #  ----------------------------------------------------------------
 @artist_bp.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
+    # TODO: populate form with fields from artist with ID <artist_id>
     artist = Artist.query.get(artist_id)
     form = ArtistForm(obj=artist)
 
-    # TODO: populate form with fields from artist with ID <artist_id>
     return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 
@@ -150,3 +150,24 @@ def edit_artist_submission(artist_id):
         flash('Artist ' + request.form['name'] + ' was successfully updated!')
 
     return redirect(url_for('artist_bp.show_artist', artist_id=artist_id))
+
+
+@artist_bp.route('/artists/<artist_id>', methods=['DELETE'])
+def delete_artist(artist_id):
+    artist = Artist.query.get(artist_id)
+    error = False
+    try:
+        db.session.delete(artist)
+        db.session.commit()
+    except:
+        error = True
+        db.session.rollback()
+    finally:
+        db.session.close()
+        if error:
+            flash('An error occurred. Artist ' + artist.name + ' could not be deleted.')
+        else:
+            flash('Successfully deleted Artist ' + artist.name + '.')
+        # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
+        # clicking that button delete it from the db then redirect the user to the homepage
+        return redirect(url_for('index'))

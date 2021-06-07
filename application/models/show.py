@@ -13,7 +13,12 @@ class Show(db.Model):
             "venue_id": self.show_venue.id,
             "venue_name": self.show_venue.name,
             "venue_image_link": self.show_venue.image_link,
-            "start_time": format_datetime(str(self.start_time))
+            "start_time": format_datetime(str(self.start_time)),
+            "artist_id": self.artist_id,
+            "artist_name": self.guest_artist.name,
+            "artist_image_link": self.guest_artist.image_link
         }
         return data
 
+    def __repr__(self):
+        return '<Show %r>' % self
