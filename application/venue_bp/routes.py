@@ -158,14 +158,13 @@ def delete_venue(venue_id):
         db.session.rollback()
     finally:
         db.session.close()
-    if error:
-        flash('An error occurred. Venue ' + venue_id + ' could not be deleted.')
-    else:
-        flash('Successfully deleted Venue ' + venue_id + '.')
-
-    # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-    # clicking that button delete it from the db then redirect the user to the homepage
-    return redirect(url_for('index'))
+        if error:
+            flash('An error occurred. Venue ' + venue_id + ' could not be deleted.')
+        else:
+            flash('Successfully deleted Venue ' + venue_id + '.')
+        # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
+        # clicking that button delete it from the db then redirect the user to the homepage
+        return redirect(url_for('index'))
 
 
 @venue_bp.route('/venues/<int:venue_id>/edit', methods=['GET'])

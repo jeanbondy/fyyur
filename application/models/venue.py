@@ -16,7 +16,7 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean(), default=False)
     seeking_description = db.Column(db.String(500))
-    shows = db.relationship('Show', backref='show_venue', lazy=True)
+    shows = db.relationship('Show', backref='show_venue', lazy=True, cascade="all, delete-orphan")
 
     def data(self):
         data = {
