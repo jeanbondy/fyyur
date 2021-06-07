@@ -35,4 +35,7 @@ class Venue(db.Model):
         }
         return data
 
+    def __repr__(self):
+        return '<Venue %r>' % self
+
     # TODO: implement any missing fields, as a database migration using Flask-Migrate

@@ -19,3 +19,6 @@ class Show(db.Model):
             "artist_image_link": self.guest_artist.image_link
         }
         return data
+
+    def __repr__(self):
+        return '<Show %r>' % self

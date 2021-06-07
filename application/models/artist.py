@@ -34,4 +34,7 @@ class Artist(db.Model):
         }
         return data
 
+    def __repr__(self):
+        return '<Artist %r>' % self
+
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
