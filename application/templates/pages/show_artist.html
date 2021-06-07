@@ -75,6 +75,7 @@
 <a href="/artists/{{ artist.id }}/edit"><button class="btn btn-primary btn-lg">Edit</button></a>
 <button id="delete_btn" data-id="{{artist.id}}" class="btn btn-primary btn-lg">Delete</button>
 
+<!-- Script for the Delete button, as "delete" method is not allowed in HTML -->
 <script>
 const delete_btn = document.getElementById('delete_btn')
 delete_btn.onclick = function(e){
