@@ -105,10 +105,10 @@ def create_artist_submission():
 #  ----------------------------------------------------------------
 @artist_bp.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
+    # TODO: populate form with fields from artist with ID <artist_id>
     artist = Artist.query.get(artist_id)
     form = ArtistForm(obj=artist)
 
-    # TODO: populate form with fields from artist with ID <artist_id>
     return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 

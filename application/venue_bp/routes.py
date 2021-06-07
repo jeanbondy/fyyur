@@ -1,8 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from application.models.venue import Venue
-from application.models.artist import Artist
 from application.models.show import Show
-from datetime import datetime
 from sqlalchemy import func
 from forms import *
 from application import db
@@ -63,20 +61,14 @@ def search_venues():
         "count": len(venues_found),
         "data": venues_found}
 
-    sample_response = {
-        "count": 1,
-        "data": [{
-            "id": 2,
-            "name": "The Dueling Pianos Bar",
-            "num_upcoming_shows": 0,
-        }]
-    }
     return render_template('pages/search_venues.html', results=response,
                            search_term=request.form.get('search_term', ''))
 
 
 @venue_bp.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
+    # shows the venue page with the given venue_id
+    # TODO: replace with real venue data from the venues table, using venue_id
     venue_query = Venue.query.get(venue_id)
     venue_data = venue_query.data()
     venue_shows = db.session.query(Show).join(Venue).filter(Show.venue_id == venue_id).all()
@@ -95,10 +87,6 @@ def show_venue(venue_id):
     venue_data['upcoming_shows'] = upcoming_shows
     venue_data["past_shows_count"] = len(past_shows)
     venue_data["upcoming_shows_count"] = len(upcoming_shows)
-
-
-    # shows the venue page with the given venue_id
-    # TODO: replace with real venue data from the venues table, using venue_id
 
     return render_template('pages/show_venue.html', venue=venue_data)
 
