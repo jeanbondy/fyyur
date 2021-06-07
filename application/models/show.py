@@ -19,4 +19,3 @@ class Show(db.Model):
             "artist_image_link": self.guest_artist.image_link
         }
         return data
-
